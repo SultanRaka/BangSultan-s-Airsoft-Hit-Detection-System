@@ -4,6 +4,7 @@ from mfrc522 import SimpleMFRC522
 import sys
 import time
 import threading
+import serial
 
 
 led = 16
@@ -11,6 +12,7 @@ button = 36
 buzzer = 37
 reader = SimpleMFRC522()
 status = 'Alive'
+
 
 GPIO.cleanup()
 GPIO.setmode(GPIO.BOARD)
@@ -57,24 +59,29 @@ def get_button():
     time.sleep(.1)
     get_button()
     
-try:
-    broker_address="192.168.2.69"
-    client = mqtt.Client("P1")
-    print('connecting')
-    client.connect(broker_address)
-    client.publish("BangSultanSmartVestSystemForTA","Alive")
-    print('connected!')
-    t1 = threading.Thread(target=get_button)
-    t2 = threading.Thread(target=get_rfid)
-    
-    
-    t1.start()
-    t2.start()
-            
-except KeyboardInterrupt:
-    GPIO.cleanup()
-    print('exit')
-    sys.exit(0)
+def get_ser():
+    global ser
+    if(ser.in_waiting > 0):
+        line = ser.readline()
+        print(line)
+        #print('Player is dead!')
+        on(led)
+        client.publish("BangSultanSmartVestSystemForTA","Dead")
+    time.sleep(.1)
+    get_ser()
+
+ser = serial.Serial('/dev/ttyUSB0', 9600)
+broker_address="192.168.2.69"
+client = mqtt.Client("P1")
+print('connecting')
+client.connect(broker_address)
+client.publish("BangSultanSmartVestSystemForTA","Alive")
+print('connected!')
+t1 = threading.Thread(target=get_ser)
+t2 = threading.Thread(target=get_rfid)
+        
+t1.start()
+t2.start()
 
 
 
