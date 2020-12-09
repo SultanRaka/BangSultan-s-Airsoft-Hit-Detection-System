@@ -1,8 +1,10 @@
+import paho.mqtt.client as mqtt
 import RPi.GPIO as GPIO
 from mfrc522 import SimpleMFRC522
 import sys
 import time
 import threading
+
 
 led = 16
 button = 36
@@ -31,8 +33,10 @@ def get_rfid():
         off(led)
         print('Revived!')
         status = 'Alive'
+        client.publish("BangSultanSmartVestSystemForTA","Revived!")
     else:
         print('Player still alive!')
+        client.publish("BangSultanSmartVestSystemForTA","Player still alive!")
     time.sleep(.1)
     get_rfid()
     
@@ -40,10 +44,17 @@ def get_button():
     if not GPIO.input(button):
         print('Player is dead!')
         on(led)
+        client.publish("BangSultanSmartVestSystemForTA","Mati!")
     time.sleep(.1)
     get_button()
     
 try:
+    broker_address="192.168.2.123"
+    client = mqtt.Client("P1")
+    print('connecting')
+    client.connect(broker_address)
+    client.publish("BangSultanSmartVestSystemForTA","Dari Raspi gan")
+    print('connected!')
     t1 = threading.Thread(target=get_button)
     t2 = threading.Thread(target=get_rfid)
     
