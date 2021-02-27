@@ -1,5 +1,5 @@
 const int knockSensor = A0; // the piezo is connected to analog pin 0
-const int threshold = 100;  // threshold value to decide when the detected sound is a knock or not
+const int threshold = 79;  // threshold value to decide when the detected sound is a knock or not
 
 
 // these variables will change:
@@ -12,6 +12,9 @@ void setup() {
 void loop() {
   // read the sensor and store it in the variable sensorReading:
   sensorReading = analogRead(knockSensor);
-  Serial.println(sensorReading);
+  if(sensorReading > threshold){
+    Serial.println(sensorReading);
+    }
+  
   delay(100);  // delay to avoid overloading the serial port buffer
 }
