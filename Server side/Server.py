@@ -14,9 +14,9 @@ def on_log(client, userdata, level, buf):
     print("Log: "+buf)
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
-        print("konek!")
+        print("Connected!")
     else:
-        print("gagal konek!")
+        print("Failed to connect!!")
         
 def on_message(client, userdata, message):
     global msg
@@ -26,13 +26,11 @@ def on_message(client, userdata, message):
     
 client = mqtt.Client("PythonIdle")
 client.on_connect=on_connect
-client.on_message=on_message #attach function to callback
-#client.on_log=on_log
+client.on_message=on_message
 print("Connecting to broker ", broker)
 client.connect(broker)
 client.loop_start()
 client.subscribe("BangSultanSmartVestSystemForTA")
-#client.publish("test","Ini dari file Python yak")
 
 root = Tk()
 label = Label(root, text="BangSultan's Smart Vest System",
@@ -47,8 +45,3 @@ label3.pack()
 label4 = Label(root, text="",font=(None, 15), width=50, height=2)
 label4.pack()
 root.mainloop()
-
-#time.sleep(4)
-#client.loop_stop()
-#client.disconnect()
-#print("Done!")
